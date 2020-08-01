@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Premia</string>
+
+    <!--  Item names for main menu  -->
+    <string-array name="main_menu_items">
+        <item>Dodaj dzień</item>
+        <item>Historia</item>
+        <item>Statystyki</item>
+    </string-array>
 </resources>
