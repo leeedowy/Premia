@@ -2,6 +2,7 @@ package com.example.premia;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 switch (position) {
                     case 0:
-                        // TODO IMPLEMENT BONUS TRACKING
+                        Intent intent = new Intent(MainActivity.this, BonusTrackingActivity.class);
+                        startActivity(intent);
                         break;
                     case 1:
                         // TODO IMPLEMENT HISTORY
