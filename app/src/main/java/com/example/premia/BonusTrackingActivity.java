@@ -16,10 +16,11 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
-public class BonusTrackingActivity extends AppCompatActivity {
+public class BonusTrackingActivity extends AppCompatActivity
+        implements OnPartialDatePickedListener, OnCompleteDatePickedListener {
     public static final String TAG = "BonusTrackingActivity";
 
-    private DayEntry acitveEntry;
+    private DayEntry activeEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,20 +32,23 @@ public class BonusTrackingActivity extends AppCompatActivity {
         }
 
         if (DayEntry.isActiveEntryAvailible()) {
-            acitveEntry = DayEntry.loadActiveEntry();
+            activeEntry = DayEntry.loadActiveEntry();
         } else {
-//        DialogFragment newTimeFragment = new TimePickerFragment();
-//        newTimeFragment.show(getSupportFragmentManager(), "timePicker");
+            activeEntry = new DayEntry();
 
-            DialogFragment newDateFragment = new DatePickerFragment();
+            DialogFragment newDateFragment = new DatePickerFragment(this);
             newDateFragment.show(getSupportFragmentManager(), "datePicker");
-
         }
-
     }
 
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
+
+        private static OnPartialDatePickedListener callback;
+
+        DatePickerFragment(OnPartialDatePickedListener listener) {
+            callback = listener;
+        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -59,7 +63,7 @@ public class BonusTrackingActivity extends AppCompatActivity {
         }
 
         public void onDateSet(DatePicker view, int year, int month, int day) {
-            Log.i(TAG, year + " " + month + " " + day);
+            callback.onPartialDatePicked(year, month, day);
         }
 
         @Override
@@ -72,6 +76,12 @@ public class BonusTrackingActivity extends AppCompatActivity {
 
     public static class TimePickerFragment extends DialogFragment
             implements TimePickerDialog.OnTimeSetListener {
+
+        private static OnCompleteDatePickedListener callback;
+
+        TimePickerFragment(OnCompleteDatePickedListener listener) {
+            callback = listener;
+        }
 
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -86,7 +96,7 @@ public class BonusTrackingActivity extends AppCompatActivity {
         }
 
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            Log.i(TAG, hourOfDay + ":" + minute);
+            callback.onCompleteDatePicked(hourOfDay, minute);
         }
 
         @Override
@@ -96,4 +106,25 @@ public class BonusTrackingActivity extends AppCompatActivity {
             getActivity().finish();
         }
     }
+
+    @Override
+    public void onPartialDatePicked(int year, int month, int day) {
+        activeEntry.setWorkStartDate(year, month, day);
+
+        DialogFragment newTimeFragment = new TimePickerFragment(this);
+        newTimeFragment.show(getSupportFragmentManager(), "timePicker");
+    }
+
+    @Override
+    public void onCompleteDatePicked(int hour, int minute) {
+        activeEntry.setWorkStartTime(hour, minute);
+    }
+}
+
+interface OnPartialDatePickedListener {
+    void onPartialDatePicked(int year, int month, int day);
+}
+
+interface OnCompleteDatePickedListener {
+    void onCompleteDatePicked(int hour, int minute);
 }
