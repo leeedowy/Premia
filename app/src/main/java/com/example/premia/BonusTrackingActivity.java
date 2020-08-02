@@ -9,22 +9,51 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import java.util.Calendar;
 
 public class BonusTrackingActivity extends AppCompatActivity
-        implements OnPartialDatePickedListener, OnCompleteDatePickedListener {
+        implements OnPartialDatePickedListener, OnCompleteDatePickedListener, View.OnClickListener {
     public static final String TAG = "BonusTrackingActivity";
 
     private DayEntry activeEntry;
+
+    private TextView lineSumTxtV;
+    private TextView averageTxtV;
+    private TextView startTimeTxtV;
+    private TextView endTimeTxtV;
+    private TextView currentTimeTxtV;
+    private TextView statusTxtV;
+
+    private Button incrementBtn;
+    private Button decrementBtn;
+    private Button pauseBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bonus_tracking);
+
+        lineSumTxtV = findViewById(R.id.lineSumTextView);
+        averageTxtV = findViewById(R.id.averageTextView);
+        startTimeTxtV = findViewById(R.id.startTimeTextView);
+        endTimeTxtV = findViewById(R.id.endTimeTextView);
+        currentTimeTxtV = findViewById(R.id.currentTimeTextView);
+        statusTxtV = findViewById(R.id.statusTextView);
+
+        incrementBtn = findViewById(R.id.incrementButton);
+        decrementBtn = findViewById(R.id.decrementButton);
+        pauseBtn = findViewById(R.id.pauseButton);
+
+        incrementBtn.setOnClickListener(this);
+        decrementBtn.setOnClickListener(this);
+        pauseBtn.setOnClickListener(this);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -38,6 +67,27 @@ public class BonusTrackingActivity extends AppCompatActivity
             DialogFragment newDateFragment = new DatePickerFragment(this);
             newDateFragment.show(getSupportFragmentManager(), "datePicker");
         }
+    }
+
+    public void refreshScreenData() {
+        lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.incrementButton:
+                activeEntry.increment();
+                break;
+            case R.id.decrementButton:
+                activeEntry.decrement();
+                break;
+            case R.id.pauseButton:
+                break;
+            default:
+        }
+
+        refreshScreenData();
     }
 
     public static class DatePickerFragment extends DialogFragment

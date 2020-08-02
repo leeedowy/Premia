@@ -39,6 +39,10 @@ public class DayEntry {
         lineSum++;
     }
 
+    public void decrement() {
+        lineSum--;
+    }
+
     public void setWorkStartDate(int year, int month, int day) {
         workStartDate.set(year, month, day);
     }
@@ -46,6 +50,10 @@ public class DayEntry {
     public void setWorkStartTime(int hour, int minute) {
         workStartDate.set(Calendar.HOUR_OF_DAY, hour);
         workStartDate.set(Calendar.MINUTE, minute);
+    }
+
+    public short getLineSum() {
+        return lineSum;
     }
 
     public static DayEntry loadActiveEntry() {
