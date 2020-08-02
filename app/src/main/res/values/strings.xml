@@ -4,6 +4,10 @@
     <!--  Picking date canceled toast  -->
     <string name="pick_date_canceled">Nie podano pełnej daty!</string>
 
+    <!--  Status messages  -->
+    <string name="status_active">AKTYWNY</string>
+    <string name="status_paused">PAUZA</string>
+
     <!--  Item names for main menu  -->
     <string-array name="main_menu_items">
         <item>Dodaj dzień</item>

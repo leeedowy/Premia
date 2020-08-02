@@ -9,6 +9,7 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -67,10 +68,21 @@ public class BonusTrackingActivity extends AppCompatActivity
             DialogFragment newDateFragment = new DatePickerFragment(this);
             newDateFragment.show(getSupportFragmentManager(), "datePicker");
         }
+
+        refreshScreenData();
     }
 
     public void refreshScreenData() {
         lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
+
+        switch (activeEntry.getStatus()) {
+            case DayEntry.WORK_ACTIVE:
+                statusTxtV.setText(R.string.status_active);
+                break;
+            case DayEntry.WORK_PAUSED:
+                statusTxtV.setText(R.string.status_paused);
+                break;
+        }
     }
 
     @Override
@@ -83,6 +95,12 @@ public class BonusTrackingActivity extends AppCompatActivity
                 activeEntry.decrement();
                 break;
             case R.id.pauseButton:
+                if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
+                    activeEntry.pause();
+                } else {
+                    activeEntry.resume();
+                }
+                Log.i(TAG, activeEntry.toString());
                 break;
             default:
         }

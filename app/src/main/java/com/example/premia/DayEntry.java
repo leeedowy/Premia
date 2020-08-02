@@ -1,6 +1,10 @@
 package com.example.premia;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DayEntry {
 
@@ -11,8 +15,9 @@ public class DayEntry {
     private Calendar workStartDate;
     private Calendar workEndDate;
     private int workLengthMillis;
+    private Map<String, Calendar> currentPause;
+    private List<Map<String, Calendar>> pauseList;
     private short lineSum;
-    private int millisWorked;
     private String status;
 
     public DayEntry() {
@@ -22,11 +27,10 @@ public class DayEntry {
 
         workLengthMillis = 7 * 3600 * 1000;
 
-
+        currentPause = new HashMap<>();
+        pauseList = new ArrayList<>();
 
         this.lineSum = 0;
-
-        this.millisWorked = 0;
 
         this.status = WORK_ACTIVE;
     }
@@ -35,12 +39,30 @@ public class DayEntry {
 
     }
 
+    public void pause() {
+        status = WORK_PAUSED;
+        currentPause.put("start", Calendar.getInstance());
+    }
+
+    public void resume() {
+        status = DayEntry.WORK_ACTIVE;
+        currentPause.put("end", Calendar.getInstance());
+        pauseList.add(currentPause);
+        currentPause = new HashMap<>();
+    }
+
+    public void calculateAverage() {
+
+    }
+
     public void increment() {
         lineSum++;
     }
 
     public void decrement() {
-        lineSum--;
+        if (lineSum > 0) {
+            lineSum--;
+        }
     }
 
     public void setWorkStartDate(int year, int month, int day) {
@@ -56,6 +78,10 @@ public class DayEntry {
         return lineSum;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public static DayEntry loadActiveEntry() {
         return null;
     }
@@ -68,8 +94,11 @@ public class DayEntry {
     public String toString() {
         return "DayEntry{" +
                 "workStartDate=" + workStartDate +
+                ", workEndDate=" + workEndDate +
+                ", workLengthMillis=" + workLengthMillis +
+                ", currentPause=" + currentPause.toString() +
+                ", pauseList=" + pauseList.toString() +
                 ", lineSum=" + lineSum +
-                ", millisWorked=" + millisWorked +
                 ", status='" + status + '\'' +
                 '}';
     }
