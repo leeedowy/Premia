@@ -1,5 +1,7 @@
 package com.example.premia;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class DayEntry {
+    public static final String TAG = "DayEntry";
 
     public static final String WORK_ACTIVE = "active";
     public static final String WORK_PAUSED = "paused";
@@ -15,8 +18,8 @@ public class DayEntry {
     private Calendar workStartDate;
     private Calendar workEndDate;
     private short workLengthHours;
-    private Map<String, Calendar> currentPause;
-    private List<Map<String, Calendar>> pauseList;
+    private HashMap<String, Calendar> currentPause;
+    private ArrayList<HashMap<String, Calendar>> pauseList;
     private short lineSum;
     private String status;
 
@@ -51,8 +54,25 @@ public class DayEntry {
         currentPause = new HashMap<>();
     }
 
-    public void calculateAverage() {
+    public String calculateAverage() {
+        Calendar now = Calendar.getInstance();
 
+        long diffInMillis = now.getTimeInMillis() - workStartDate.getTimeInMillis();
+
+        Log.i(TAG, "Before pauses: " + (diffInMillis / 1000) + " seconds");
+
+        for (HashMap<String, Calendar> pause : pauseList) {
+            Calendar pauseStart = pause.get("start");
+            Calendar pauseEnd = pause.get("end");
+
+            diffInMillis -= pauseEnd.getTimeInMillis() - pauseStart.getTimeInMillis();
+        }
+
+        Log.i(TAG, "After pauses: " + (diffInMillis / 1000) + " seconds");
+
+        double diffInHours = diffInMillis / 1000.0 / 3600.0;
+
+        return String.format("%.1f", lineSum / diffInHours);
     }
 
     public void increment() {

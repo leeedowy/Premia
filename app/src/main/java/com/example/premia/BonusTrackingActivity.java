@@ -8,8 +8,8 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -20,7 +20,7 @@ import android.widget.Toast;
 import java.util.Calendar;
 
 public class BonusTrackingActivity extends AppCompatActivity
-        implements OnPartialDatePickedListener, OnCompleteDatePickedListener, View.OnClickListener {
+        implements OnPartialDatePickedListener, OnCompleteDatePickedListener, View.OnClickListener, Runnable {
     public static final String TAG = "BonusTrackingActivity";
 
     private DayEntry activeEntry;
@@ -35,6 +35,8 @@ public class BonusTrackingActivity extends AppCompatActivity
     private Button incrementBtn;
     private Button decrementBtn;
     private Button pauseBtn;
+
+    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +58,8 @@ public class BonusTrackingActivity extends AppCompatActivity
         decrementBtn.setOnClickListener(this);
         pauseBtn.setOnClickListener(this);
 
+        handler = new Handler();
+
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -68,11 +72,21 @@ public class BonusTrackingActivity extends AppCompatActivity
             DialogFragment newDateFragment = new DatePickerFragment(this);
             newDateFragment.show(getSupportFragmentManager(), "datePicker");
         }
-
-        refreshScreenData();
     }
 
-    public void refreshScreenData() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handler.postDelayed(this, 1000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(this);
+    }
+
+    public void setScreenData() {
         lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
 
         switch (activeEntry.getStatus()) {
@@ -84,8 +98,11 @@ public class BonusTrackingActivity extends AppCompatActivity
                 break;
         }
 
-        startTimeTxtV.setText(toReadableTime(activeEntry.getWorkStartDate()));
-        endTimeTxtV.setText(toReadableTime(activeEntry.getWorkEndDate()));
+        String startTime = toReadableTime(activeEntry.getWorkStartDate());
+        startTimeTxtV.setText(startTime.substring(0, startTime.length() - 3));
+
+        String endTime = toReadableTime(activeEntry.getWorkEndDate());
+        endTimeTxtV.setText(endTime.substring(0, endTime.length() - 3));
     }
 
     public String toReadableTime(Calendar date) {
@@ -94,9 +111,17 @@ public class BonusTrackingActivity extends AppCompatActivity
         result += date.get(Calendar.HOUR_OF_DAY) + ":";
 
         if (date.get(Calendar.MINUTE) < 10) {
-            result += 0 + date.get(Calendar.MINUTE) + "";
+            result += "0" + date.get(Calendar.MINUTE);
         } else {
             result += date.get(Calendar.MINUTE) + "";
+        }
+
+        result += ":";
+
+        if (date.get(Calendar.SECOND) < 10) {
+            result += "0" + date.get(Calendar.SECOND);
+        } else {
+            result += date.get(Calendar.SECOND) + "";
         }
 
         return result;
@@ -114,16 +139,19 @@ public class BonusTrackingActivity extends AppCompatActivity
             case R.id.pauseButton:
                 if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
                     activeEntry.pause();
+                    decrementBtn.setClickable(false);
+                    incrementBtn.setClickable(false);
                 } else {
                     activeEntry.resume();
+                    incrementBtn.setClickable(true);
+                    decrementBtn.setClickable(true);
                 }
-                Log.i(TAG, activeEntry.toString());
                 break;
             default:
         }
 
-        refreshScreenData();
-    }
+        setScreenData();
+}
 
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
@@ -202,6 +230,17 @@ public class BonusTrackingActivity extends AppCompatActivity
     @Override
     public void onCompleteDatePicked(int hour, int minute) {
         activeEntry.setWorkStartTime(hour, minute);
+        setScreenData();
+    }
+
+    @Override
+    public void run() {
+        if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
+            averageTxtV.setText(getString(R.string.average_placeholder, activeEntry.calculateAverage()));
+        }
+        currentTimeTxtV.setText(toReadableTime(Calendar.getInstance()));
+
+        handler.postDelayed(this, 1000);
     }
 }
 

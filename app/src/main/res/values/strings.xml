@@ -8,6 +8,9 @@
     <string name="status_active">AKTYWNY</string>
     <string name="status_paused">PAUZA</string>
 
+    <!--  Average text view placeholder  -->
+    <string name="average_placeholder">%s / h</string>
+
     <!--  Item names for main menu  -->
     <string-array name="main_menu_items">
         <item>Dodaj dzień</item>
