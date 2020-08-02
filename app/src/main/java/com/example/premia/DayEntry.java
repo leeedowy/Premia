@@ -14,7 +14,7 @@ public class DayEntry {
 
     private Calendar workStartDate;
     private Calendar workEndDate;
-    private int workLengthMillis;
+    private short workLengthHours;
     private Map<String, Calendar> currentPause;
     private List<Map<String, Calendar>> pauseList;
     private short lineSum;
@@ -25,7 +25,7 @@ public class DayEntry {
         workStartDate.set(Calendar.SECOND, 0);
         workStartDate.set(Calendar.MILLISECOND, 0);
 
-        workLengthMillis = 7 * 3600 * 1000;
+        workLengthHours = 7;
 
         currentPause = new HashMap<>();
         pauseList = new ArrayList<>();
@@ -82,6 +82,16 @@ public class DayEntry {
         return status;
     }
 
+    public Calendar getWorkStartDate() {
+        return workStartDate;
+    }
+
+    public Calendar getWorkEndDate() {
+        Calendar workEndDate = (Calendar) workStartDate.clone();
+        workEndDate.add(Calendar.HOUR_OF_DAY, workLengthHours);
+        return workEndDate;
+    }
+
     public static DayEntry loadActiveEntry() {
         return null;
     }
@@ -95,7 +105,7 @@ public class DayEntry {
         return "DayEntry{" +
                 "workStartDate=" + workStartDate +
                 ", workEndDate=" + workEndDate +
-                ", workLengthMillis=" + workLengthMillis +
+                ", workLengthHours=" + workLengthHours +
                 ", currentPause=" + currentPause.toString() +
                 ", pauseList=" + pauseList.toString() +
                 ", lineSum=" + lineSum +

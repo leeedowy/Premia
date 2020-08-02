@@ -83,6 +83,23 @@ public class BonusTrackingActivity extends AppCompatActivity
                 statusTxtV.setText(R.string.status_paused);
                 break;
         }
+
+        startTimeTxtV.setText(toReadableTime(activeEntry.getWorkStartDate()));
+        endTimeTxtV.setText(toReadableTime(activeEntry.getWorkEndDate()));
+    }
+
+    public String toReadableTime(Calendar date) {
+        String result = "";
+
+        result += date.get(Calendar.HOUR_OF_DAY) + ":";
+
+        if (date.get(Calendar.MINUTE) < 10) {
+            result += 0 + date.get(Calendar.MINUTE) + "";
+        } else {
+            result += date.get(Calendar.MINUTE) + "";
+        }
+
+        return result;
     }
 
     @Override
