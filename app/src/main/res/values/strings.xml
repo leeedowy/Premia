@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">Premia</string>
 
+    <!--  Picking date canceled toast  -->
+    <string name="pick_date_canceled">Nie podano pełnej daty!</string>
+
     <!--  Item names for main menu  -->
     <string-array name="main_menu_items">
         <item>Dodaj dzień</item>
