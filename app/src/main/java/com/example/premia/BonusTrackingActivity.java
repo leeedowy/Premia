@@ -9,7 +9,6 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.widget.DatePicker;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -31,7 +30,7 @@ public class BonusTrackingActivity extends AppCompatActivity
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        if (DayEntry.isActiveEntryAvailible()) {
+        if (DayEntry.isActiveEntryAvailable()) {
             activeEntry = DayEntry.loadActiveEntry();
         } else {
             activeEntry = new DayEntry();

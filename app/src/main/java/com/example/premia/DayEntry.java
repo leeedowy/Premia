@@ -5,9 +5,12 @@ import java.util.Calendar;
 public class DayEntry {
 
     public static final String WORK_ACTIVE = "active";
+    public static final String WORK_PAUSED = "paused";
     public static final String WORK_ENDED = "ended";
 
     private Calendar workStartDate;
+    private Calendar workEndDate;
+    private int workLengthMillis;
     private short lineSum;
     private int millisWorked;
     private String status;
@@ -16,8 +19,15 @@ public class DayEntry {
         this.workStartDate = Calendar.getInstance();
         workStartDate.set(Calendar.SECOND, 0);
         workStartDate.set(Calendar.MILLISECOND, 0);
+
+        workLengthMillis = 7 * 3600 * 1000;
+
+
+
         this.lineSum = 0;
+
         this.millisWorked = 0;
+
         this.status = WORK_ACTIVE;
     }
 
@@ -42,7 +52,7 @@ public class DayEntry {
         return null;
     }
 
-    public static boolean isActiveEntryAvailible() {
+    public static boolean isActiveEntryAvailable() {
         return false;
     }
 
