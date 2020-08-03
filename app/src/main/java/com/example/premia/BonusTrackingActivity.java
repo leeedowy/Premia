@@ -7,6 +7,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateFormat;
@@ -20,7 +21,8 @@ import android.widget.Toast;
 import java.util.Calendar;
 
 public class BonusTrackingActivity extends AppCompatActivity
-        implements OnPartialDatePickedListener, OnCompleteDatePickedListener, View.OnClickListener, Runnable {
+        implements OnPartialDatePickedListener, OnCompleteDatePickedListener,
+                   View.OnClickListener, Runnable, View.OnLongClickListener {
     public static final String TAG = "BonusTrackingActivity";
 
     private DayEntry activeEntry;
@@ -35,6 +37,10 @@ public class BonusTrackingActivity extends AppCompatActivity
     private Button incrementBtn;
     private Button decrementBtn;
     private Button pauseBtn;
+
+    private MediaPlayer incrementMP;
+    private MediaPlayer decrementMP;
+    private MediaPlayer pauseMP;
 
     private Handler handler;
 
@@ -55,8 +61,12 @@ public class BonusTrackingActivity extends AppCompatActivity
         pauseBtn = findViewById(R.id.pauseButton);
 
         incrementBtn.setOnClickListener(this);
-        decrementBtn.setOnClickListener(this);
-        pauseBtn.setOnClickListener(this);
+        decrementBtn.setOnLongClickListener(this);
+        pauseBtn.setOnLongClickListener(this);
+
+        incrementMP = MediaPlayer.create(this, R.raw.increment);
+        decrementMP = MediaPlayer.create(this, R.raw.decrement);
+        pauseMP = MediaPlayer.create(this, R.raw.pause);
 
         handler = new Handler();
 
@@ -129,29 +139,49 @@ public class BonusTrackingActivity extends AppCompatActivity
 
     @Override
     public void onClick(View v) {
+        if (v.getId() == R.id.incrementButton) {
+            activeEntry.increment();
+            lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
+            incrementMP.start();
+
+            incrementBtn.setClickable(false);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    incrementBtn.setClickable(true);
+                }
+            }, 500);
+        }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
         switch (v.getId()) {
-            case R.id.incrementButton:
-                activeEntry.increment();
-                break;
             case R.id.decrementButton:
                 activeEntry.decrement();
+                lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
+                decrementMP.start();
                 break;
             case R.id.pauseButton:
                 if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
                     activeEntry.pause();
                     decrementBtn.setClickable(false);
                     incrementBtn.setClickable(false);
+                    statusTxtV.setText(R.string.status_paused);
                 } else {
                     activeEntry.resume();
                     incrementBtn.setClickable(true);
                     decrementBtn.setClickable(true);
+                    statusTxtV.setText(R.string.status_active);
                 }
+
+                pauseMP.start();
                 break;
             default:
         }
 
-        setScreenData();
-}
+        return true;
+    }
 
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
