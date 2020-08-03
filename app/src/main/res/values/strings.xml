@@ -11,6 +11,11 @@
     <!--  Average text view placeholder  -->
     <string name="average_placeholder">%s / h</string>
 
+    <!--  Back button dialog strings  -->
+    <string name="back_button_dialog_cancel">Anuluj</string>
+    <string name="back_button_dialog_yes">Tak</string>
+    <string name="back_button_dialog_title">Czy na pewno chcesz wyjść?</string>
+
     <!--  Item names for main menu  -->
     <string-array name="main_menu_items">
         <item>Dodaj dzień</item>

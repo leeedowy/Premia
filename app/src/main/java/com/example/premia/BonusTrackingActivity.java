@@ -3,6 +3,7 @@ package com.example.premia;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -23,7 +24,7 @@ import java.util.Calendar;
 
 public class BonusTrackingActivity extends AppCompatActivity
         implements OnPartialDatePickedListener, OnCompleteDatePickedListener,
-                   View.OnClickListener, Runnable, View.OnLongClickListener {
+                   View.OnClickListener, Runnable, View.OnLongClickListener, GoBackListener {
     public static final String TAG = "BonusTrackingActivity";
 
     private DayEntry activeEntry;
@@ -186,6 +187,12 @@ public class BonusTrackingActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        BackButtonDialogFragment dialog = new BackButtonDialogFragment(this);
+        dialog.show(getSupportFragmentManager(), "backButtonDialog");
+    }
+
     public static class DatePickerFragment extends DialogFragment
             implements DatePickerDialog.OnDateSetListener {
 
@@ -252,6 +259,34 @@ public class BonusTrackingActivity extends AppCompatActivity
         }
     }
 
+    public static class BackButtonDialogFragment extends DialogFragment {
+
+        private GoBackListener callback;
+
+        public BackButtonDialogFragment(GoBackListener callback) {
+            this.callback = callback;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.back_button_dialog_title)
+                    .setPositiveButton(R.string.back_button_dialog_yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            callback.onGoBack();
+                        }
+                    })
+                    .setNegativeButton(R.string.back_button_dialog_cancel, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // User cancelled the dialog
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
     @Override
     public void onPartialDatePicked(int year, int month, int day) {
         activeEntry.setWorkStartDate(year, month, day);
@@ -264,6 +299,11 @@ public class BonusTrackingActivity extends AppCompatActivity
     public void onCompleteDatePicked(int hour, int minute) {
         activeEntry.setWorkStartTime(hour, minute);
         setScreenData();
+    }
+
+    @Override
+    public void onGoBack() {
+        super.onBackPressed();
     }
 
     @Override
@@ -296,4 +336,8 @@ interface OnPartialDatePickedListener {
 
 interface OnCompleteDatePickedListener {
     void onCompleteDatePicked(int hour, int minute);
+}
+
+interface GoBackListener {
+    void onGoBack();
 }
