@@ -7,6 +7,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -165,14 +166,16 @@ public class BonusTrackingActivity extends AppCompatActivity
             case R.id.pauseButton:
                 if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
                     activeEntry.pause();
-                    decrementBtn.setClickable(false);
-                    incrementBtn.setClickable(false);
+                    incrementBtn.setEnabled(false);
+                    decrementBtn.setEnabled(false);
                     statusTxtV.setText(R.string.status_paused);
+                    statusTxtV.setTextColor(Color.YELLOW);
                 } else {
                     activeEntry.resume();
-                    incrementBtn.setClickable(true);
-                    decrementBtn.setClickable(true);
+                    incrementBtn.setEnabled(true);
+                    decrementBtn.setEnabled(true);
                     statusTxtV.setText(R.string.status_active);
+                    statusTxtV.setTextColor(Color.GREEN);
                 }
 
                 pauseMP.start();
@@ -266,7 +269,20 @@ public class BonusTrackingActivity extends AppCompatActivity
     @Override
     public void run() {
         if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
-            averageTxtV.setText(getString(R.string.average_placeholder, activeEntry.calculateAverage()));
+            String averageStr = activeEntry.calculateAverage();
+            double average = Double.parseDouble(averageStr);
+
+            if (average < 52.0) {
+                averageTxtV.setBackgroundColor(Color.RED);
+            } else if (average < 73.0) {
+                averageTxtV.setBackgroundColor(Color.YELLOW);
+            } else if (average < 83.0) {
+                averageTxtV.setBackgroundColor(Color.GREEN);
+            } else {
+                averageTxtV.setBackgroundColor(Color.BLUE);
+            }
+
+            averageTxtV.setText(getString(R.string.average_placeholder, averageStr));
         }
         currentTimeTxtV.setText(toReadableTime(Calendar.getInstance()));
 
