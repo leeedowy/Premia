@@ -5,8 +5,6 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class DayEntry {
     public static final String TAG = "DayEntry";
