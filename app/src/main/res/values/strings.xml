@@ -9,7 +9,7 @@
     <string name="status_paused">PAUZA</string>
 
     <!--  Average text view placeholder  -->
-    <string name="average_placeholder">%s / h</string>
+    <string name="norm_percentage">%d%%</string>
 
     <!--  Back button dialog strings  -->
     <string name="back_button_dialog_cancel">Anuluj</string>

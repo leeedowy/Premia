@@ -1,6 +1,5 @@
 package com.example.premia;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
@@ -9,7 +8,6 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -33,7 +31,7 @@ public class BonusTrackingActivity extends AppCompatActivity
     private DayEntry activeEntry;
 
     private TextView lineSumTxtV;
-    private TextView averageTxtV;
+    private TextView normPercentageTxtV;
     private TextView startTimeTxtV;
     private TextView endTimeTxtV;
     private TextView currentTimeTxtV;
@@ -55,7 +53,7 @@ public class BonusTrackingActivity extends AppCompatActivity
         setContentView(R.layout.activity_bonus_tracking);
 
         lineSumTxtV = findViewById(R.id.lineSumTextView);
-        averageTxtV = findViewById(R.id.averageTextView);
+        normPercentageTxtV = findViewById(R.id.normPercentageTextView);
         startTimeTxtV = findViewById(R.id.startTimeTextView);
         endTimeTxtV = findViewById(R.id.endTimeTextView);
         currentTimeTxtV = findViewById(R.id.currentTimeTextView);
@@ -324,20 +322,19 @@ public class BonusTrackingActivity extends AppCompatActivity
     @Override
     public void run() {
         if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
-            String averageStr = activeEntry.calculateAverage();
-            double average = Double.parseDouble(averageStr);
+            short normPercentage = activeEntry.calculateNormPercentage();
 
-            if (average < 52.0) {
-                averageTxtV.setBackgroundColor(Color.RED);
-            } else if (average < 73.0) {
-                averageTxtV.setBackgroundColor(Color.YELLOW);
-            } else if (average < 83.0) {
-                averageTxtV.setBackgroundColor(Color.GREEN);
+            if (normPercentage < 100) {
+                normPercentageTxtV.setBackgroundColor(Color.RED);
+            } else if (normPercentage < 140) {
+                normPercentageTxtV.setBackgroundColor(Color.YELLOW);
+            } else if (normPercentage < 160) {
+                normPercentageTxtV.setBackgroundColor(Color.GREEN);
             } else {
-                averageTxtV.setBackgroundColor(Color.BLUE);
+                normPercentageTxtV.setBackgroundColor(Color.BLUE);
             }
 
-            averageTxtV.setText(getString(R.string.average_placeholder, averageStr));
+            normPercentageTxtV.setText(getString(R.string.norm_percentage, normPercentage));
         }
         currentTimeTxtV.setText(toReadableTime(Calendar.getInstance()));
 

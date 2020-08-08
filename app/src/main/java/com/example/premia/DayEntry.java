@@ -52,12 +52,13 @@ public class DayEntry {
         currentPause = new HashMap<>();
     }
 
-    public String calculateAverage() {
+    public short calculateNormPercentage() {
+        if (lineSum == 0) {
+            return 0;
+        }
+
         Calendar now = Calendar.getInstance();
-
         long diffInMillis = now.getTimeInMillis() - workStartDate.getTimeInMillis();
-
-        Log.i(TAG, "Before pauses: " + (diffInMillis / 1000) + " seconds");
 
         for (HashMap<String, Calendar> pause : pauseList) {
             Calendar pauseStart = pause.get("start");
@@ -66,11 +67,10 @@ public class DayEntry {
             diffInMillis -= pauseEnd.getTimeInMillis() - pauseStart.getTimeInMillis();
         }
 
-        Log.i(TAG, "After pauses: " + (diffInMillis / 1000) + " seconds");
-
         double diffInHours = diffInMillis / 1000.0 / 3600.0;
+        double normPercentage = lineSum / diffInHours / 52.0 * 100;
 
-        return String.format("%.1f", lineSum / diffInHours);
+        return (short) normPercentage;
     }
 
     public void increment() {
