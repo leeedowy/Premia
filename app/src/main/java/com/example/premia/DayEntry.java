@@ -1,7 +1,5 @@
 package com.example.premia;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -14,11 +12,12 @@ public class DayEntry {
     public static final String WORK_ENDED = "ended";
 
     private Calendar workStartDate;
-    private Calendar workEndDate;
     private short workLengthHours;
+
     private HashMap<String, Calendar> currentPause;
     private ArrayList<HashMap<String, Calendar>> pauseList;
-    private short lineSum;
+
+    private short linesDone;
     private String status;
 
     public DayEntry() {
@@ -31,8 +30,7 @@ public class DayEntry {
         currentPause = new HashMap<>();
         pauseList = new ArrayList<>();
 
-        this.lineSum = 0;
-
+        this.linesDone = 0;
         this.status = WORK_ACTIVE;
     }
 
@@ -53,7 +51,7 @@ public class DayEntry {
     }
 
     public short calculateNormPercentage() {
-        if (lineSum == 0) {
+        if (linesDone == 0) {
             return 0;
         }
 
@@ -68,18 +66,18 @@ public class DayEntry {
         }
 
         double diffInHours = diffInMillis / 1000.0 / 3600.0;
-        double normPercentage = lineSum / diffInHours / 52.0 * 100;
+        double normPercentage = linesDone / diffInHours / 52.0 * 100;
 
         return (short) normPercentage;
     }
 
     public void increment() {
-        lineSum++;
+        linesDone++;
     }
 
     public void decrement() {
-        if (lineSum > 0) {
-            lineSum--;
+        if (linesDone > 0) {
+            linesDone--;
         }
     }
 
@@ -92,8 +90,8 @@ public class DayEntry {
         workStartDate.set(Calendar.MINUTE, minute);
     }
 
-    public short getLineSum() {
-        return lineSum;
+    public short getLinesDone() {
+        return linesDone;
     }
 
     public String getStatus() {
@@ -122,11 +120,10 @@ public class DayEntry {
     public String toString() {
         return "DayEntry{" +
                 "workStartDate=" + workStartDate +
-                ", workEndDate=" + workEndDate +
                 ", workLengthHours=" + workLengthHours +
                 ", currentPause=" + currentPause.toString() +
                 ", pauseList=" + pauseList.toString() +
-                ", lineSum=" + lineSum +
+                ", linesDone=" + linesDone +
                 ", status='" + status + '\'' +
                 '}';
     }

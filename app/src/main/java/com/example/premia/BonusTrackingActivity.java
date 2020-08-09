@@ -8,6 +8,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -29,6 +31,8 @@ public class BonusTrackingActivity extends AppCompatActivity
     public static final String TAG = "BonusTrackingActivity";
 
     private DayEntry activeEntry;
+
+    private ProgressBar normMetPrgrsBar;
 
     private TextView lineSumTxtV;
     private TextView normPercentageTxtV;
@@ -51,6 +55,8 @@ public class BonusTrackingActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bonus_tracking);
+
+        normMetPrgrsBar = findViewById(R.id.normMetProgressBar);
 
         lineSumTxtV = findViewById(R.id.lineSumTextView);
         normPercentageTxtV = findViewById(R.id.normPercentageTextView);
@@ -100,7 +106,7 @@ public class BonusTrackingActivity extends AppCompatActivity
     }
 
     public void setScreenData() {
-        lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
+        lineSumTxtV.setText(String.valueOf(activeEntry.getLinesDone()));
 
         switch (activeEntry.getStatus()) {
             case DayEntry.WORK_ACTIVE:
@@ -144,7 +150,7 @@ public class BonusTrackingActivity extends AppCompatActivity
     public void onClick(View v) {
         if (v.getId() == R.id.incrementButton) {
             activeEntry.increment();
-            lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
+            lineSumTxtV.setText(String.valueOf(activeEntry.getLinesDone()));
             incrementMP.start();
 
             incrementBtn.setClickable(false);
@@ -162,7 +168,7 @@ public class BonusTrackingActivity extends AppCompatActivity
         switch (v.getId()) {
             case R.id.decrementButton:
                 activeEntry.decrement();
-                lineSumTxtV.setText(String.valueOf(activeEntry.getLineSum()));
+                lineSumTxtV.setText(String.valueOf(activeEntry.getLinesDone()));
                 decrementMP.start();
                 break;
             case R.id.pauseButton:
@@ -322,19 +328,36 @@ public class BonusTrackingActivity extends AppCompatActivity
     @Override
     public void run() {
         if (activeEntry.getStatus().equals(DayEntry.WORK_ACTIVE)) {
-            short normPercentage = activeEntry.calculateNormPercentage();
 
-            if (normPercentage < 100) {
+            short currentNormPercentage = activeEntry.calculateNormPercentage();
+
+            if (currentNormPercentage < 100) {
                 normPercentageTxtV.setBackgroundColor(Color.RED);
-            } else if (normPercentage < 140) {
+            } else if (currentNormPercentage < 140) {
                 normPercentageTxtV.setBackgroundColor(Color.YELLOW);
-            } else if (normPercentage < 160) {
+            } else if (currentNormPercentage < 160) {
                 normPercentageTxtV.setBackgroundColor(Color.GREEN);
             } else {
                 normPercentageTxtV.setBackgroundColor(Color.BLUE);
             }
 
-            normPercentageTxtV.setText(getString(R.string.norm_percentage, normPercentage));
+            short normPercentage = (short) (activeEntry.getLinesDone() / 365.0 * 100);
+
+            if (normPercentage < 100) {
+                normMetPrgrsBar.setProgress(normPercentage);
+                normMetPrgrsBar.setProgressTintList(ColorStateList.valueOf(Color.RED));
+            } else if (normPercentage < 140) {
+                normMetPrgrsBar.setProgress((int) ((normPercentage - 100) / 40.0 * 100));
+                normMetPrgrsBar.setProgressTintList(ColorStateList.valueOf(Color.YELLOW));
+            } else if (normPercentage < 160) {
+                normMetPrgrsBar.setProgress((int) ((normPercentage - 140) / 20.0 * 100));
+                normMetPrgrsBar.setProgressTintList(ColorStateList.valueOf(Color.GREEN));
+            } else {
+                normMetPrgrsBar.setProgress(100);
+                normMetPrgrsBar.setProgressTintList(ColorStateList.valueOf(Color.BLUE));
+            }
+
+            normPercentageTxtV.setText(getString(R.string.norm_percentage, currentNormPercentage));
         }
         currentTimeTxtV.setText(toReadableTime(Calendar.getInstance()));
 
