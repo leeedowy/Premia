@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
 import java.util.Calendar;
 
 public class BonusTrackingActivity extends AppCompatActivity
@@ -341,7 +343,7 @@ public class BonusTrackingActivity extends AppCompatActivity
                 normPercentageTxtV.setBackgroundColor(Color.BLUE);
             }
 
-            short normPercentage = (short) (activeEntry.getLinesDone() / 365.0 * 100);
+            short normPercentage = (short) (activeEntry.getLinesDone() / 416.0 * 100);
 
             if (normPercentage < 100) {
                 normMetPrgrsBar.setProgress(normPercentage);

@@ -25,7 +25,7 @@ public class DayEntry {
         workStartDate.set(Calendar.SECOND, 0);
         workStartDate.set(Calendar.MILLISECOND, 0);
 
-        workLengthHours = 7;
+        workLengthHours = 8;
 
         currentPause = new HashMap<>();
         pauseList = new ArrayList<>();
